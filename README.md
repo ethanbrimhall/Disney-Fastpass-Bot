@@ -16,8 +16,8 @@ For more information on how it works visit: https://www.youtube.com/watch?v=KRa-
 
 HOW TO RUN THE CODE:
 
-Before running the code, you must put your username and password into the code, there will be comments to help
-Next you must put the guest id of each person in the code as well...
-...To do that you must go to the "Create FastPass+ Party" page and inspect element
-Find and click on each guest's name with inspect element and click copy their xpath and paste in the code
-After that you are finished and can run the code
+1. Before running the code, you must put your username and password into the code, there will be comments to help
+2. Next you must put the guest id of each person in the code as well...
+3. ...To do that you must go to the "Create FastPass+ Party" page and inspect element
+4. Find and click on each guest's name with inspect element and click copy their xpath and paste in the code
+5. After that you are finished and can run the code
