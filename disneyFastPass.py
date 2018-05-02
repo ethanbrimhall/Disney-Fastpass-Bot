@@ -1,18 +1,22 @@
+#make sure you pip install everything below
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from time import sleep
 import smtplib
-import pymysql
 
+#lists all the rides in each park
 akRides = ["Avatar Flight of Passage", "Na'vi River Journey", "DINOSAUR", "Expedition Everest - Legend of the Forbidden Mountain", "Festival of the Lion King", "Finding Nemo - The Musical", "It's Tough to be a Bug!", "Kali River Rapids", "Kilimanjaro Safaris", "Meet Favorite Disney Pals", "Primeval Whirl", "Rivers of Light"]
 mkRides = ["The Barnstormer", "Big Thunder Mountain Railroad", "Buzz Lightyear's Space Ranger Spin", "Dumbo the Flying Elephant", "Enchanted Tales with Belle", "Haunted Mansion", "it's a small world", "Jungle Cruise", "Mad Tea Party", "The Magic Carpets of Aladdin", "The Many Adventures of Winnie the Pooh", "Meet Ariel at Her Grotto", "Meet Cinderella", "Meet Mickey", "Meet Rapunzel", "Meet Tinker Bell", "Mickey's PhilharMagic", "Monsters, Inc. Laugh Floor", "Peter Pan's Flight", "Pirates of the Caribbean", "Space Mountain", "Splash Mountain", "Tomorrowland Speedway", "Journey of The Little Mermaid", "Seven Dwarfs Mine Train"]
 hsRides = ["Beauty and the Beast-Live", "Fantasmic!", "Rock 'n' Roller Coaster", "Disney Junior - Live", "Frozen Sing-Along", "Epic Stunt Spectacular!", "Muppet*Vision 3D", "Star Tours", "The Twilight Zone Tower", "Voyage of The Little Mermaid", "Toy Story Mania!"]
 eRides = ["Frozen Ever After", "IllumiNations", "Soarin'", "Test Track", "Short Film Festival", "Journey Into Imagination", "Living with the Land", "Meet Disney Pals", "Mission: SPACE", "Nemo & Friends", "Spaceship Earth", "Turtle Talk With Crush"]
 
+#adds them to array
 parkRides = [mkRides, eRides, hsRides, akRides]
 
+#this variable is used in while loop to break...
 x = False
 
+#starting here is asking for user input for the park, ride, and time
 print("Magic Kingdom: 1 | Epcot: 2 | Hollywood Studios: 3 | Animal Kingdom: 4")
 print("")
 park = input("What park are you going to: ")
@@ -50,13 +54,19 @@ print("")
 time = input("Select A Time: ")
 timeZone = input("AM or PM: ")
 
+#user input is over and webdriver is starting below
+
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
+#change path to your path of chromedriver!
 chrome_path = r"/usr/lib/chromium-browser/chromedriver"
 driver = webdriver.Chrome(chrome_path, chrome_options=options)
 driver.get("https://disneyworld.disney.go.com/fastpass-plus/")
+
+#all the while loops like this are so the website clicks a button right away
 while x == False:
     try:
+        #clicks Get Started button
         driver.find_element_by_xpath("""//*[@id="fastPasslandingPage"]/div[3]/div[1]/div/div/div/div""").click()
         x = True
     except:
@@ -65,8 +75,9 @@ while x == False:
 x = False
 while x == False:
     try:
-        driver.find_element_by_xpath("""//*[@id="loginPageUsername"]""").send_keys("")
-        driver.find_element_by_xpath("""//*[@id="loginPagePassword"]""").send_keys("")
+        #this is the login area
+        driver.find_element_by_xpath("""//*[@id="loginPageUsername"]""").send_keys("email") 
+        driver.find_element_by_xpath("""//*[@id="loginPagePassword"]""").send_keys("password")
         driver.find_element_by_xpath("""//*[@id="loginPageSubmitButton"]/span""").click()
         x = True
     except:
@@ -74,7 +85,8 @@ while x == False:
 x = False
 while x == False:
     try:
-        driver.find_element_by_xpath("""//*[@id="guest-guestIDGoesHere-unselected"]/div""").click()
+        #selects the first guest in party, go to README for more details on how to find guest id
+        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
         x = True
     except:
         try:
@@ -86,19 +98,22 @@ while x == False:
 x = False
 while x == False:
     try:
-        driver.find_element_by_xpath("""//*[@id="guest-guestIDGoesHere-unselected"]/div""").click()
-        driver.find_element_by_xpath("""//*[@id="guest-guestIDGoesHere-unselected"]/div""").click()
-        driver.find_element_by_xpath("""//*[@id="guest-guestIDGoesHere-unselected"]/div""").click()
+        #for the rest of the people in the party, see README for more details, also add or delete for how many guests are in the party
+        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
+        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
+        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
         driver.find_element_by_xpath("""//*[@id="selectPartyPage"]/div[3]/div/div[2]/div""").click()
         x = True
     except:
         x = False
 
+#user must manually select a date
 print("Select A Date On Screen!")
 print("")
 x = False
 while x == False:
     try:
+        #selects the park
         if park == "1":
             driver.find_element_by_xpath("""//*[@id="selectParkContainer"]/div[2]/div[1]/div/div[1]/img""").click()
         elif park == "2":
@@ -117,10 +132,13 @@ breakLoop = False
 whichTime = 1
 timesChecked = 1
 
+#while ride is not found
 while isFound == False:
     sleep(5)
+    #this if statement is for magic kingdom, their park is setup different than the rest
     if park == "1":
         try:
+            #checks each ride
             for aride in mkRides:
                 num =  mkRides.index(aride) + 1
                 try:
@@ -137,6 +155,7 @@ while isFound == False:
                                 rideTime = timeText.text[:2]
                                 rideTimeZone = timeText.text[6:]
                             if time == rideTime and rideTimeZone == timeZone:
+                                #ride has been found
                                 isFound = True
                                 breakLoop = True
                                 print(element.text)
@@ -155,6 +174,7 @@ while isFound == False:
 
         except:
             pass
+    #this is for all 3 of the other parks    
     else:
         try:
             for aride in parkRides[int(park)-1]:
@@ -173,6 +193,7 @@ while isFound == False:
                                 rideTime = timeText.text[:2]
                                 rideTimeZone = timeText.text[6:]
                             if time == rideTime and rideTimeZone == timeZone:
+                                #found ride
                                 isFound = True
                                 breakLoop = True
                                 print(element.text)
@@ -228,7 +249,7 @@ while isFound == False:
             pass
     
                 
-            
+    #this clicks morning, afternoon, evening
     if isFound == False:
         breakLoop = False
         timesChecked += 1
