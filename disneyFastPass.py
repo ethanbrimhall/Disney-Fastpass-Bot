@@ -1,3 +1,4 @@
+#Ethan Brimhall
 #make sure you pip install everything below
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -76,8 +77,8 @@ x = False
 while x == False:
     try:
         #this is the login area
-        driver.find_element_by_xpath("""//*[@id="loginPageUsername"]""").send_keys("email") 
-        driver.find_element_by_xpath("""//*[@id="loginPagePassword"]""").send_keys("password")
+        driver.find_element_by_xpath("""//*[@id="loginPageUsername"]""").send_keys("email")#your email
+        driver.find_element_by_xpath("""//*[@id="loginPagePassword"]""").send_keys("password")#your password
         driver.find_element_by_xpath("""//*[@id="loginPageSubmitButton"]/span""").click()
         x = True
     except:
