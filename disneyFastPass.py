@@ -84,26 +84,33 @@ while x == False:
     except:
         x = False
 x = False
+#the user selection is for four people, change it for how many people you have
 while x == False:
     try:
-        #selects the first guest in party, go to README for more details on how to find guest id
-        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
+        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click() #this is for guest 2, do not put the already selected guest at the top here
+        userSelected = True
         x = True
     except:
         try:
             driver.find_element_by_xpath("""//*[@id="fastPasslandingPage"]/div[4]/div/div[1]/div/div""").click()
             x = True
+            userSelected = False
         except:
             x = False
 
 x = False
 while x == False:
     try:
-        #for the rest of the people in the party, see README for more details, also add or delete for how many guests are in the party
-        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
-        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
-        driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click()
-        driver.find_element_by_xpath("""//*[@id="selectPartyPage"]/div[3]/div/div[2]/div""").click()
+        if userSelected == True:
+            driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click() #guest 3
+            driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click() #guest 4
+            driver.find_element_by_xpath("""//*[@id="selectPartyPage"]/div[3]/div/div[2]/div""").click()
+        else:
+            driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click() #guest 2
+            driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click() #guest 3
+            driver.find_element_by_xpath("""//*[@id="guest-YOUR GUEST ID-unselected"]/div""").click() #guest 4
+            driver.find_element_by_xpath("""//*[@id="selectPartyPage"]/div[3]/div/div[2]/div""").click()
+            
         x = True
     except:
         x = False
