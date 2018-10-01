@@ -2,7 +2,7 @@
 
 <h3>Setup for people with no programming experience:</h3>
 <ul>
-  <li>Watch this video on instruction for setup in Windows 10: https://www.youtube.com/watch?v=BL5Osdk1HZA&t=11s</li>
+  <li>Watch this video on instruction for setup in Windows 10: https://www.youtube.com/watch?v=BL5Osdk1HZA</li>
 </ul>
   
 <h3>Setup for people with some programming experience:</h3>
