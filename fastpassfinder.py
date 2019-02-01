@@ -257,12 +257,12 @@ def checkTime(driver, num, minHour, maxHour, rideLocation):
                 maxZone = maxHour[2:]
                 maxHour = maxHour[:2]
 
-            if minZone == "PM" and minHour != 12:
+            if minZone == "PM" and minHour != "12":
                 minHour = int(minHour) + 12
             else:
                 minHour = int(minHour)
 
-            if maxZone == "PM" and maxHour != 12:
+            if maxZone == "PM" and maxHour != "12":
                 maxHour = int(maxHour) + 12
             else:
                 maxHour = int(maxHour)
