@@ -220,6 +220,7 @@ def confirmRide(driver, ride, num, timeNum, rideLocation):
         try:
             driver.find_element_by_xpath("""//*[@id="reviewConfirmButton"]/div""").click()
             print(ride + " HAS BEEN CONFIRMED!")
+            sleep(15)
             break
         except:
             continue
