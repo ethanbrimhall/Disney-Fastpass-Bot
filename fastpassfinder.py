@@ -158,9 +158,9 @@ def continueToSelectUsersScreen(driver):
 def specifyGuests(driver):
 
     for guest in credentials.guests:
-        driver.find_element_by_xpath("""//*[@id=""" + '"' + guest + '"' + """]/div""").click()
+        if check_exists_by_xpath(driver, """//*[@id=""" + '"' + guest + '"' + """]/div"""):
+            driver.find_element_by_xpath("""//*[@id=""" + '"' + guest + '"' + """]/div""").click()
 
-    
     continueToDateSelection(driver)
 
 #This is the function that provides logic based on if the user is by themself or with a party
