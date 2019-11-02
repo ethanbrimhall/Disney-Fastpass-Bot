@@ -2,6 +2,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 import smtplib
 import sys
@@ -17,6 +18,13 @@ eRides = ["Frozen Ever After", "IllumiNations", "Soarin'", "Test Track", "Short 
 #Grouped all rides into an array to get
 parkRides = [mkRides, eRides, hsRides, akRides]
 
+#Handy internal tool to check if an element exists
+def check_exists_by_xpath(driver, xpath):
+    try:
+        driver.find_element_by_xpath(xpath)
+    except NoSuchElementException:
+        return False
+    return True
 
 #This function checks whether the user has filled out the email and password in credentials.py file
 def checkCredentialsFile():
