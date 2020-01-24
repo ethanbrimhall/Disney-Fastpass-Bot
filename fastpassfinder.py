@@ -2,6 +2,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 import smtplib
 import sys
@@ -17,6 +18,13 @@ eRides = ["Frozen Ever After", "IllumiNations", "Soarin'", "Test Track", "Short 
 #Grouped all rides into an array to get
 parkRides = [mkRides, eRides, hsRides, akRides]
 
+#Handy internal tool to check if an element exists
+def check_exists_by_xpath(driver, xpath):
+    try:
+        driver.find_element_by_xpath(xpath)
+    except NoSuchElementException:
+        return False
+    return True
 
 #This function checks whether the user has filled out the email and password in credentials.py file
 def checkCredentialsFile():
@@ -150,9 +158,9 @@ def continueToSelectUsersScreen(driver):
 def specifyGuests(driver):
 
     for guest in credentials.guests:
-        driver.find_element_by_xpath("""//*[@id=""" + '"' + guest + '"' + """]/div""").click()
+        if check_exists_by_xpath(driver, """//*[@id=""" + '"' + guest + '"' + """]/div"""):
+            driver.find_element_by_xpath("""//*[@id=""" + '"' + guest + '"' + """]/div""").click()
 
-    
     continueToDateSelection(driver)
 
 #This is the function that provides logic based on if the user is by themself or with a party
@@ -210,16 +218,37 @@ def loopTimePeriod(driver, currentTimePeriod):
         except:
             return 1
 
-
-def confirmRide(driver, ride, num, timeNum, rideLocation):
+def confirmRide(driver, ride, num, timeNum, rideLocation, overrideChoice):
     if timeNum == 0:
         timeNum = 1
     timeText = driver.find_element_by_xpath("""//*[@id="selectExperienceExperiencesList"]/div[""" + str(rideLocation) + """]/div[2]/div[""" + str(num) + """]/div/div[2]/div/div[""" + str(timeNum) + """]""").click()
     sleep(2)
+
+    # Override other reservation
+    if (overrideChoice == 1 and
+        check_exists_by_xpath(driver, """//*[@id="conflictsPagePage"]/div[4]/div[4]/div/div[3]/div/div[3]/div/div[1]""")):
+        # Click continue for each guest
+        for guest in credentials.guests:
+            while True:
+                try:
+                    driver.find_element_by_xpath("""//*[@id="conflictsPagePage"]/div[4]/div[4]/div/div[3]/div/div[3]/div/div[1]""").click()
+                except:
+                    break
+            sleep(1)
+
+        # Click next to proceed to confirmation page
+        while True:
+            try:
+                driver.find_element_by_xpath("""//*[@id="conflictsPagePage"]/div[5]/div/div[3]/div""").click()
+                break
+            except:
+                continue
+
     while True:
         try:
             driver.find_element_by_xpath("""//*[@id="reviewConfirmButton"]/div""").click()
             print(ride + " HAS BEEN CONFIRMED!")
+            sleep(15)
             break
         except:
             continue
@@ -275,8 +304,7 @@ def checkTime(driver, num, minHour, maxHour, rideLocation):
         
     return False
 
-
-def magicKingdomParkHandler(driver, ride, minHour, maxHour):
+def magicKingdomParkHandler(driver, ride, minHour, maxHour, overrideChoice):
 
     try:
         for num in range(1, len(mkRides) + 1):
@@ -286,7 +314,7 @@ def magicKingdomParkHandler(driver, ride, minHour, maxHour):
 
                     timeNum = checkTime(driver, num, minHour, maxHour, 2)
                     if timeNum != False:
-                        confirmRide(driver, ride, num, timeNum, 2)
+                        confirmRide(driver, ride, num, timeNum, 2, overrideChoice)
                         return True
             except:
                 continue
@@ -295,7 +323,7 @@ def magicKingdomParkHandler(driver, ride, minHour, maxHour):
 
     return False
 
-def animalEpcotHollywoodParkHandler(driver, park, ride, minHour, maxHour):
+def animalEpcotHollywoodParkHandler(driver, park, ride, minHour, maxHour, overrideChoice):
     try:
         for num in range(1, len(parkRides[int(park) - 1]) + 1):
             try:
@@ -304,7 +332,7 @@ def animalEpcotHollywoodParkHandler(driver, park, ride, minHour, maxHour):
 
                     timeNum = checkTime(driver, num, minHour, maxHour, 2)
                     if timeNum != False:
-                        confirmRide(driver, ride, num, timeNum, 2)
+                        confirmRide(driver, ride, num, timeNum, 2, overrideChoice)
                         return True
             except:
                 continue
@@ -315,11 +343,11 @@ def animalEpcotHollywoodParkHandler(driver, park, ride, minHour, maxHour):
 
                     timeNum = checkTime(driver, num, minHour, maxHour, 3)
                     if timeNum != False:
-                        confirmRide(driver, ride, num, timeNum, 3)
+                        confirmRide(driver, ride, num, timeNum, 3, overrideChoice)
                         return True
             except:
                 continue
-                
+
 
     except:
         return False
@@ -345,7 +373,7 @@ def main():
     timeFrameChoice = input("Do you want to set a time frame for your ride:\n" +
                       "     1.) Yes\n" +
                       "     2.) No\n" + 
-                      "Choice: ")
+                      "Choice: \n")
 
     if timeFrameChoice == "1":
         minHour = getMinHour()
@@ -355,6 +383,12 @@ def main():
         maxHour = False
 
     numGuests = getNumberOfGuests()
+
+    overrideChoice = input("If a fastpass is found but conflicts with a fastpass you already have, would you like to automatically override the conflicting fastpass?:\n" +
+                      "If you select no, you will need to manually intervene\n" +
+                      "     1.) Yes\n" +
+                      "     2.) No\n" +
+                      "Choice: ")
 
     ride = convertRideNumToText(park, ride)
 
@@ -384,9 +418,9 @@ def main():
 
         #If the park is magic kingdom, it has its seperate function because of the different HTML layout on the website
         if park == "1":
-            allRidesFound = magicKingdomParkHandler(driver, ride, minHour, maxHour)
+            allRidesFound = magicKingdomParkHandler(driver, ride, minHour, maxHour, overrideChoice)
         else:
-            allRidesFound = animalEpcotHollywoodParkHandler(driver, park, ride, minHour, maxHour)
+            allRidesFound = animalEpcotHollywoodParkHandler(driver, park, ride, minHour, maxHour, overrideChoice)
 
         #Click button to switch between morning, afternoon, and evening time periods
         if allRidesFound == False:
